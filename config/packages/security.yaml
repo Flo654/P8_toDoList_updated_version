@@ -1,16 +1,20 @@
 security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
    encoders:
-        AppBundle\Entity\User: bcrypt
+        App\Entity\User: auto
    
    providers:
-        users_in_memory: { memory: null }
+         in_database:
+            entity:
+                class: App\Entity\User
+                property: username
    firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             anonymous: lazy
+            provider: in_database
             pattern: ^/
             form_login:
                 login_path: login
@@ -18,7 +22,7 @@ security:
                 always_use_default_target_path:  true
                 default_target_path:  /
             logout: ~
-            provider: users_in_memory
+            
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
