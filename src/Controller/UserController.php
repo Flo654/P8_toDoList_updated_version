@@ -26,19 +26,18 @@ class UserController extends AbstractController
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
-
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+        if ($form->isSubmitted() && $form->isValid()) 
+        {    
+            $form->get('isAdmin')->getData() ? $user->setRoles(["ROLE_ADMIN"]) : $user->setRoles(["ROLE_USER"]);
+            $user->setPassword($userPasswordEncoder->encodePassword($user, $form->get('password')->getData()));           
             
-            $user->setPassword($userPasswordEncoder->encodePassword($user, $form->get('password')->getData()));
-
+            $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
 
             $this->addFlash('success', "L'utilisateur a bien été ajouté.");
-
             return $this->redirectToRoute('user_list');
         }
 
@@ -48,20 +47,23 @@ class UserController extends AbstractController
     /**
      * @Route("/users/{id}/edit", name="user_edit")
      */
-    public function editAction(User $user, Request $request)
+    public function editAction(User $user, Request $request, UserPasswordEncoderInterface $userPasswordEncoder)
     {
         $form = $this->createForm(UserType::class, $user);
+        
+        if ($form->getData()->getRoles() == ["ROLE_ADMIN"]){
+            $form->get('isAdmin')->setData(true);
+        }
+        
+        $form->handleRequest($request);        
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
-            $user->setPassword($password);
+        if ($form->isSubmitted() && $form->isValid()) 
+        {            
+            $form->get('isAdmin')->getData() ? $user->setRoles(["ROLE_ADMIN"]) : $user->setRoles(["ROLE_USER"]);
+            $user->setPassword($userPasswordEncoder->encodePassword($user, $form->get('password')->getData()));           
 
             $this->getDoctrine()->getManager()->flush();
-
             $this->addFlash('success', "L'utilisateur a bien été modifié");
-
             return $this->redirectToRoute('user_list');
         }
 
