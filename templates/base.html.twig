@@ -11,10 +11,11 @@
         <title>To Do List app</title>
 
         <!-- Bootstrap Core CSS -->
-        <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
         <!-- Custom CSS -->
-        <link href="{{ asset('css/shop-homepage.css') }}" rel="stylesheet">
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
 
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -25,21 +26,16 @@
     </head>
 
     <body>
-        <nav class="navbar navbar-light navbar-fixed-top" style="background-color: #e3f2fd;" role="navigation">
+        <nav class="navbar navbar-light bg-light navbar-fixed-top" role="navigation">
             <div class="container">
                 <div class="navbar-header">
                     <a class="navbar-brand" href="#">To Do List app</a>
-
-                    <img src="{{ asset('img/Logo_OpenClassrooms.png') }}" alt="OpenClassrooms" />
+                    <img src="{{ asset('img/Logo_OpenClassrooms.png') }}" alt="OpenClassrooms" />                    
                 </div>
-            </div>
-        </nav>
-
-        <!-- Page Content -->
-        <div class="container">
-            <div class="row">
+                <div class="">
+                {% if not app.user %}
                 <a href="{{ path('user_create') }}" class="btn btn-primary">Créer un utilisateur</a>
-
+                {% endif %}
                 {% if app.user %}
                 <a href="{{ path('logout') }}" class="pull-right btn btn-danger">Se déconnecter</a>
                 {% endif %}
@@ -48,6 +44,13 @@
                 <a href="{{ path('login') }}" class="btn btn-success">Se connecter</a>
                 {% endif %}
             </div>
+                
+            </div>
+        </nav>
+
+        <!-- Page Content -->
+        <div class="container">
+            
 
             <div class="row">
                 <div class="col-md-12">
@@ -64,7 +67,9 @@
                     {% endfor %}
 
                     {% block header_title %}{% endblock %}
-                    {% block header_img %}<img class="slide-image" src="{{ asset('img/todolist_homepage.jpg') }}" alt="todo list">{% endblock %}
+                    {% block header_img %}
+                        <div class="d-flex justify-content-center"><img class="img-fluid" src="{{ asset('img/todolist_homepage.jpg') }}" alt="todo list"></div>
+                    {% endblock %}
                 </div>
             </div>
 
@@ -91,7 +96,8 @@
 
         </div>
 
-        <script src="{{ asset('js/jquery.js') }}"></script>
-        <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     </body>
 </html>

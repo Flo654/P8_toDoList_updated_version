@@ -1,38 +1,53 @@
 {% extends 'base.html.twig' %}
 
-{% block header_img %}<img class="slide-image" src="{{ asset('img/todolist_content.jpg') }}" alt="todo list">{% endblock %}
+{% block header_img %} <div class="d-flex justify-content-center"><img class="slide-image" src="{{ asset('img/todolist_content.jpg') }}" alt="todo list"></div>{% endblock %}
 
 {% block body %}
-    <a href="{{ path('task_create') }}" class="btn btn-info pull-right">Créer une tâche</a>
-    <div class="row">
+    <a href="{{ path('task_create') }}" class="btn btn-primary pull-right mb-3">Créer une tâche</a>
+    <div class="card-deck">
         {% for task in tasks %}
         
-        <div class="col-sm-4 col-lg-4 col-md-4">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4 class="pull-right">
-                        {% if task.isDone %}<span class="glyphicon glyphicon-ok"></span>{% else %}<span class="glyphicon glyphicon-remove"></span>{% endif %}
-                    </h4>
-                    <h4><a href="{{ path('task_edit', {'id' : task.id }) }}">{{ task.title }}</a></h4>
-                    <p class="mb-5">{{ task.content }}</p>
-                    <p class="mt-5 text-success">tache crée par: {% if task.user %} {{ task.user.username }} {% else %} utilisateur anonyme
-                        {% endif %}</p>
+        <div class="card">            
+            <div class="card-body">                    
+                <div class="d-flex justify-content-between">
+                <h4 class="text-capitalize mb-0">{{ task.title }}</h4>
+                
+                <h4 class="mb-0">
+                    {% if task.isDone %}<i class="fa-solid fa-check text-success mb-0"></i></span>{% endif %}
+                </h4></div>
+                <p class=" mb-1 ">
+                    Crée par: 
+                    {% if task.user %} 
+                        <span class="text-capitalize font-weight-bold">{{ task.user.username }}</span> 
+                    {% else %} 
+                        <span class="text-capitalize font-weight-bold">Utilisateur anonyme</span>
+                    {% endif %}
+                </p>
+                <p class="mb-5 font-italic">{{ task.content }}</p>
+                
+                <div class="d-flex justify-content-between">
+                    
+                        {% if not task.isDone %}
+                            <a href="{{ path('task_toggle', {'id' : task.id }) }}" class="btn btn-info btn-sm ">Marquer comme tache effectuée</a>
+                        {% else %}
+                            <p class="bg-success p-1 text-white rounded">Tache effectuée</p>
+                        {% endif %}
+                        
+                   
+                    {% if app.user %}
+                        <div>
+                            <a href="{{ path('task_delete', {'id' : task.id }) }}" class="text-danger"><i class="fa-solid fa-trash-can"></i></a>
+                            <a href="{{ path('task_edit', {'id' : task.id }) }}"><i class="text-primary fa-solid fa-pen-to-square"></i></a>
+                        </div>
+                    {% endif %}
+                    
+                    
                 </div>
-                <div>
-                    <form action="{{ path('task_toggle', {'id' : task.id }) }}">
-                        <button class="btn btn-success btn-sm pull-right">
-                            {% if not task.isDone %}Marquer comme faite{% else %}Marquer non terminée{% endif %}
-                        </button>
-                    </form>
-                    <form action="{{ path('task_delete', {'id' : task.id }) }}">
-                        <button class="btn btn-danger btn-sm pull-right">Supprimer</button>
-                    </form>
-                </div>
-            </div>
+            </div>          
         </div>
         {% else %}
             <div class="alert alert-warning" role="alert">
-                Il n'y a pas encore de tâche enregistrée. <a href="{{ path('task_create') }}" class="btn btn-warning pull-right">Créer une tâche</a>
+                Il n'y a pas encore de tâche. <a href="{{ path('task_create') }}" class="btn btn-warning pull-right">Créer une tâche</a>
             </div>
         {% endfor %}
     </div>
