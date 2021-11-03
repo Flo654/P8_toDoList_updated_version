@@ -4,18 +4,41 @@ namespace App\Controller;
 
 use App\Entity\Task;
 use App\Form\TaskType;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TaskController extends AbstractController
 {
     /**
-     * @Route("/tasks", name="task_list")
+     * list of tasks with options (all tasks, tasks done, tasks to do)
+     * 
+     * @Route("/tasks/{optionList}", 
+     * defaults={"optionList" = null}, 
+     * requirements={"optionList"="tasksToDo|tasksDone"}, 
+     * name="task_list"
+     * )
      */
-    public function listAction()
-    {
-       return $this->render('task/list.html.twig', ['tasks' => $this->getDoctrine()->getRepository('App:Task')->findAll()]);
+    public function listAction( ?string $optionList):Response
+    {        
+        $taskrepository = $this->getDoctrine()->getRepository('App:Task');
+        switch ($optionList) {
+            case 'tasksDone':                
+                $taskList =  $taskrepository->findBy(['isDone' => true]);
+                break;
+            
+            case 'tasksToDo':
+                $taskList =  $taskrepository->findBy(['isDone' => false]);
+                break;
+                
+            default:
+            $taskList =  $taskrepository->findAll();
+                break;
+        }
+       
+        return $this->render('task/list.html.twig', ['tasks' => $taskList]);
     }
 
     /**
@@ -45,11 +68,17 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/{id}/edit", name="task_edit")
+     * @IsGranted(
+     *  "TASK_EDIT", 
+     *  subject="task",
+     *  message="Vous n'etes pas le créateur de la tache, vous n'avez pas le droit dela modifier"
+     * )
      */
     public function editAction(Task $task, Request $request)
     {
         $form = $this->createForm(TaskType::class, $task);
         $form->handleRequest($request);
+        dd($request);
 
         if ($form->isSubmitted() && $form->isValid()) 
         {
@@ -69,19 +98,26 @@ class TaskController extends AbstractController
      */
     public function toggleTaskAction(Task $task)
     {
+        
         $task->toggle(!$task->isDone());
         $this->getDoctrine()->getManager()->flush();
 
-        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
+        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme Effectuée.', $task->getTitle()));
 
-        return $this->redirectToRoute('task_list');
+        return $this->redirectToRoute('homepage');
     }
 
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
+     * @IsGranted(
+     *  "TASK_DELETE", 
+     *  subject="task",
+     *  message="Vous n'etes pas le créateur de la tache, vous n'avez pas le droit de la supprimer"
+     * )
      */
     public function deleteTaskAction(Task $task)
     {
+        dd('vous pouvez supprimer cette tache');
         $em = $this->getDoctrine()->getManager();
         $em->remove($task);
         $em->flush();
