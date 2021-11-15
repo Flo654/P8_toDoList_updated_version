@@ -58,7 +58,7 @@ class TaskController extends AbstractController
             $em->persist($task);
             $em->flush();
 
-            $this->addFlash('success', 'La tâche a été bien été ajoutée.');
+            $this->addFlash('success', 'La tâche a bien été ajoutée.');
 
             return $this->redirectToRoute('task_list');
         }
@@ -78,7 +78,7 @@ class TaskController extends AbstractController
     {
         $form = $this->createForm(TaskType::class, $task);
         $form->handleRequest($request);
-        dd($request);
+        
 
         if ($form->isSubmitted() && $form->isValid()) 
         {
@@ -117,7 +117,7 @@ class TaskController extends AbstractController
      */
     public function deleteTaskAction(Task $task)
     {
-        dd('vous pouvez supprimer cette tache');
+        
         $em = $this->getDoctrine()->getManager();
         $em->remove($task);
         $em->flush();
