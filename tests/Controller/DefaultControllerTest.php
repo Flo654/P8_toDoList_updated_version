@@ -2,17 +2,37 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\User;
+use App\Tests\utils\LoginUser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DefaultControllerTest extends WebTestCase
 {
-    public function testIndex()
+    use LoginUser;
+    private $objectManager;
+    private $client;    
+   
+    public function setUp(): void
+    {       
+        $this->client = static::createClient();
+        $this->objectManager = $this->client->getContainer()->get('doctrine')->getManager();
+    } 
+
+    public function testIndexRedirectionOk()
+    {          
+        $this->client->request('GET', '/');        
+        $this->assertResponseRedirects($this->client->getResponse()->headers->get('Location'), 302)  ;  
+    }
+
+    public function testIndexWhenUserIsConnectedH1()
     {
-        $client = static::createClient();
-
-        $crawler = $client->request('GET', '/');
-
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertContains('Welcome to Symfony', $crawler->filter('#container h1')->text());
+        $user= $this->objectManager->getRepository(User::class)->findOneBy(['username'=>'admin']);
+        $this->logIn($user);
+        $this->client->request('GET','/');
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains(
+            'h1',
+            'Bienvenue sur Todo List, l\'application vous permettant de gérer l\'ensemble de vos tâches sans effort !'
+        );
     }
 }
