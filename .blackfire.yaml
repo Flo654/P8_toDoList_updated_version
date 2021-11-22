@@ -1,0 +1,3 @@
+recommendations:
+    php.dump_composer_autoloader_classmap:
+        enabled: false

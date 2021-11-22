@@ -55,12 +55,14 @@ class TaskControllerTest extends WebTestCase
     {
         $user = $this->objectManager->getRepository(User::class)->findOneBy(['username'=>'user']);
         $this->logIn($user);
-
+        //dd($user);
         $task = $this->objectManager->getRepository(Task::class)->findOneBy(['title'=>'titre1']);
+        //dd($task);
         $crawler = $this->client->request('GET','/tasks/'.$task->getId().'/edit');
         
         $this->assertNotEquals($task->getUser(),$user->getUsername());
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());       
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode()); 
+        
     }
 
     public function testResponseEditTaskIfAdminOrOwner()
@@ -77,7 +79,8 @@ class TaskControllerTest extends WebTestCase
         );  
     }
 
-    public function testEditTaskIsSuccessful(){
+    public function testEditTaskIsSuccessful()
+    {
         $user = $this->objectManager->getRepository(User::class)->findOneBy(['username'=>'admin']);
         $this->logIn($user);
 
@@ -115,8 +118,8 @@ class TaskControllerTest extends WebTestCase
     {
         $user = $this->objectManager->getRepository(User::class)->findOneBy(['username' => 'admin']);
         $this->logIn($user);
-        $task = $this->objectManager->getRepository(Task::class)->findOneBy(['id' => 36]);
-
+        $task = $this->objectManager->getRepository(Task::class)->findOneBy(['id' => 1]);
+        //dd($task);
         $crawler = $this->client->request('GET','/tasks/'.$task->getId().'/delete');
         $this->assertResponseRedirects($this->client->getResponse()->headers->get('Location'), 302);
         $this->client->followRedirect();

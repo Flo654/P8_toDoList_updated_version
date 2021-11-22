@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserType;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -17,9 +19,14 @@ class UserController extends AbstractController
      * @Route("/users", name="user_list")
      * @IsGranted("ROLE_ADMIN", message="Cette page est reservée aux administrateurs")
      */
-    public function listAction()
+    public function listAction(CacheInterface $cacheInterface)
     {
-        return $this->render('user/list.html.twig', ['users' => $this->getDoctrine()->getRepository('App:User')->findAll()]);
+        $usersListInCache = $cacheInterface->get('usersList', function(ItemInterface $item) {
+            $item->expiresAfter(90);
+            return $this->getDoctrine()->getRepository('App:User')->findAll();
+        });
+        
+        return $this->render('user/list.html.twig', ['users' => $usersListInCache]);
     }
 
     /**

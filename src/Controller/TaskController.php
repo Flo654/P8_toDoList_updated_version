@@ -4,11 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Task;
 use App\Form\TaskType;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class TaskController extends AbstractController
 {
@@ -21,23 +23,29 @@ class TaskController extends AbstractController
      * name="task_list"
      * )
      */
-    public function listAction( ?string $optionList):Response
+    public function listAction( ?string $optionList, CacheInterface $cacheInterface):Response
     {        
+       //dd($optionList);
         $taskrepository = $this->getDoctrine()->getRepository('App:Task');
         switch ($optionList) {
             case 'tasksDone':                
                 $taskList =  $taskrepository->findBy(['isDone' => true]);
+               // dd($taskList);
                 break;
             
             case 'tasksToDo':
                 $taskList =  $taskrepository->findBy(['isDone' => false]);
+                //dd($taskList);
                 break;
                 
             default:
             $taskList =  $taskrepository->findAll();
                 break;
         }
-       
+       /*  $tasklistInCache = $cacheInterface->get('taskList', function(ItemInterface $item) use($taskList){
+            $item->expiresAfter(10);
+            return $taskList;
+        }); */
         return $this->render('task/list.html.twig', ['tasks' => $taskList]);
     }
 
