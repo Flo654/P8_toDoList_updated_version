@@ -55,9 +55,7 @@ class TaskControllerTest extends WebTestCase
     {
         $user = $this->objectManager->getRepository(User::class)->findOneBy(['username'=>'user']);
         $this->logIn($user);
-        //dd($user);
-        $task = $this->objectManager->getRepository(Task::class)->findOneBy(['title'=>'titre1']);
-        //dd($task);
+        $task = $this->objectManager->getRepository(Task::class)->findOneBy(['title'=>'tache1']);
         $crawler = $this->client->request('GET','/tasks/'.$task->getId().'/edit');
         
         $this->assertNotEquals($task->getUser(),$user->getUsername());
@@ -70,7 +68,7 @@ class TaskControllerTest extends WebTestCase
         $user = $this->objectManager->getRepository(User::class)->findOneBy(['username'=>'admin']);
         $this->logIn($user);
 
-        $task = $this->objectManager->getRepository(Task::class)->findOneBy(['title'=>'titre1']);
+        $task = $this->objectManager->getRepository(Task::class)->findOneBy(['title'=>'tache1']);
         $crawler = $this->client->request('GET','/tasks/'.$task->getId().'/edit');
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains(
@@ -83,8 +81,7 @@ class TaskControllerTest extends WebTestCase
     {
         $user = $this->objectManager->getRepository(User::class)->findOneBy(['username'=>'admin']);
         $this->logIn($user);
-
-        $task = $this->objectManager->getRepository(Task::class)->findOneBy(['title'=>'titre1']);
+        $task = $this->objectManager->getRepository(Task::class)->findOneBy(['title'=>'tache1']);
         $crawler = $this->client->request('GET','/tasks/'.$task->getId().'/edit');
         $this->assertSelectorExists('form');
         $form = $crawler->selectButton('Modifier')->form([
@@ -103,29 +100,24 @@ class TaskControllerTest extends WebTestCase
     {
         $user = $this->objectManager->getRepository(User::class)->findOneBy(['username'=>'admin']);
         $this->logIn($user);
-
-        $task = $this->objectManager->getRepository(Task::class)->findOneBy(['title'=>'titre1']);
+        $task = $this->objectManager->getRepository(Task::class)->findOneBy(['id' => 3]);
         $isDone = $task->isDone();
         $crawler = $this->client->request('GET','/tasks/'.$task->getId().'/toggle');
-        $this->assertNotEquals($task->isDone(),$isDone);
-        
-        
-        
-        
+        $this->assertNotEquals($task->isDone(),$isDone);        
     }
 
     public function testdeletingNoAuthorTaskWhenAdmin()
     {
         $user = $this->objectManager->getRepository(User::class)->findOneBy(['username' => 'admin']);
         $this->logIn($user);
-        $task = $this->objectManager->getRepository(Task::class)->findOneBy(['id' => 1]);
-        //dd($task);
+        $task = $this->objectManager->getRepository(Task::class)->findOneBy(['id' => 2]);
         $crawler = $this->client->request('GET','/tasks/'.$task->getId().'/delete');
         $this->assertResponseRedirects($this->client->getResponse()->headers->get('Location'), 302);
         $this->client->followRedirect();
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('div.alert.alert-success', 'La tâche a bien été supprimée.');
     }
+    
     
     
 }

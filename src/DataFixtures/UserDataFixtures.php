@@ -23,7 +23,7 @@ class UserDataFixtures extends Fixture
         $user = new User();
         $user->setUsername('user');
         $user->setPassword('user');
-        $user->setEmail('usern@user.com');
+        $user->setEmail('user@user.com');
         $user->setRoles(['ROLE_USER']);       
         $manager->persist($user);
         
