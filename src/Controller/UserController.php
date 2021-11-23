@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 
@@ -19,7 +20,7 @@ class UserController extends AbstractController
      * @Route("/users", name="user_list")
      * @IsGranted("ROLE_ADMIN", message="Cette page est reservée aux administrateurs")
      */
-    public function listAction(CacheInterface $cacheInterface)
+    public function listAction(CacheInterface $cacheInterface) :Response
     {
         $usersListInCache = $cacheInterface->get('usersList', function(ItemInterface $item) {
             $item->expiresAfter(90);
@@ -33,7 +34,7 @@ class UserController extends AbstractController
      * @Route("/users/create", name="user_create")
      * @IsGranted("CAN_CREATE", message="en tant qu'utilisateur connecté, vous n'avez pas le droit de creer d'autres utilisateurs") 
      */
-    public function createAction(Request $request, UserPasswordEncoderInterface $userPasswordEncoder)
+    public function createAction(Request $request, UserPasswordEncoderInterface $userPasswordEncoder) : Response
     {
        
         $user = new User();
@@ -60,10 +61,9 @@ class UserController extends AbstractController
      * @Route("/users/{id}/edit", name="user_edit")
      * @IsGranted("CAN_EDIT", message="Vous n'etes pas administrateur, vous n'avez pas le droit de modifier cet utilisateur")
      */
-    public function editAction(User $user, Request $request, UserPasswordEncoderInterface $userPasswordEncoder)
+    public function editAction(User $user, Request $request, UserPasswordEncoderInterface $userPasswordEncoder) :Response
     {
-        $form = $this->createForm(UserType::class, $user);
-                
+        $form = $this->createForm(UserType::class, $user);                
         $form->handleRequest($request);        
 
         if ($form->isSubmitted() && $form->isValid()) 

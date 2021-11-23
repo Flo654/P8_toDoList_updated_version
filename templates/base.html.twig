@@ -29,11 +29,11 @@
         <nav class="navbar navbar-light bg-light navbar-fixed-top" role="navigation">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="#">To Do List app</a>
+                    <a class="navbar-brand" href="/">To Do List app</a>
                     <img src="{{ asset('img/Logo_OpenClassrooms.png') }}" alt="OpenClassrooms" />                    
                 </div>
                 <div class="">
-                {% if not app.user %}
+                {% if (not app.user) or  (is_granted('ROLE_ADMIN')) %}
                 <a href="{{ path('user_create') }}" class="btn btn-primary">Créer un utilisateur</a>
                 {% endif %}
                 {% if app.user %}

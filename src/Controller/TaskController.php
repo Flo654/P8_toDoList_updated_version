@@ -25,34 +25,35 @@ class TaskController extends AbstractController
      */
     public function listAction( ?string $optionList, CacheInterface $cacheInterface):Response
     {        
-       //dd($optionList);
-        $taskrepository = $this->getDoctrine()->getRepository('App:Task');
+       $taskrepository = $this->getDoctrine()->getRepository('App:Task');
         switch ($optionList) {
             case 'tasksDone':                
-                $taskList =  $taskrepository->findBy(['isDone' => true]);
-               // dd($taskList);
+                $tasksDone = $taskrepository->findBy(['isDone' => true]);
+                $tasksInCache = $cacheInterface->get('taskDone', function(ItemInterface $item) use($tasksDone){
+                    $item->expiresAfter(20);
+                    return $tasksDone;
+                });
                 break;
             
             case 'tasksToDo':
-                $taskList =  $taskrepository->findBy(['isDone' => false]);
-                //dd($taskList);
+                $taskToDo = $taskrepository->findBy(['isDone' => false]);
+                $tasksInCache = $cacheInterface->get('taskToDo', function(ItemInterface $item) use($taskToDo){
+                    $item->expiresAfter(20);
+                    return $taskToDo;
+                });
                 break;
                 
             default:
-            $taskList =  $taskrepository->findAll();
+            $tasksInCache = $taskrepository->findAll();
                 break;
-        }
-       /*  $tasklistInCache = $cacheInterface->get('taskList', function(ItemInterface $item) use($taskList){
-            $item->expiresAfter(10);
-            return $taskList;
-        }); */
-        return $this->render('task/list.html.twig', ['tasks' => $taskList]);
+        }       
+        return $this->render('task/list.html.twig', ['tasks' => $tasksInCache]);
     }
 
     /**
      * @Route("/tasks/create", name="task_create")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request) :Response
     {
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
@@ -82,11 +83,10 @@ class TaskController extends AbstractController
      *  message="Vous n'etes pas le créateur de la tache, vous n'avez pas le droit dela modifier"
      * )
      */
-    public function editAction(Task $task, Request $request)
+    public function editAction(Task $task, Request $request) :Response
     {
         $form = $this->createForm(TaskType::class, $task);
-        $form->handleRequest($request);
-        
+        $form->handleRequest($request);        
 
         if ($form->isSubmitted() && $form->isValid()) 
         {
@@ -104,14 +104,11 @@ class TaskController extends AbstractController
     /**
      * @Route("/tasks/{id}/toggle", name="task_toggle")
      */
-    public function toggleTaskAction(Task $task)
-    {
-        
+    public function toggleTaskAction(Task $task) :Response
+    {        
         $task->toggle(!$task->isDone());
         $this->getDoctrine()->getManager()->flush();
-
-        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme Effectuée.', $task->getTitle()));
-
+        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme effectuée.', $task->getTitle()));
         return $this->redirectToRoute('homepage');
     }
 
@@ -123,15 +120,12 @@ class TaskController extends AbstractController
      *  message="Vous n'etes pas le créateur de la tache, vous n'avez pas le droit de la supprimer"
      * )
      */
-    public function deleteTaskAction(Task $task)
-    {
-        
+    public function deleteTaskAction(Task $task) :Response
+    {        
         $em = $this->getDoctrine()->getManager();
         $em->remove($task);
         $em->flush();
-
         $this->addFlash('success', 'La tâche a bien été supprimée.');
-
         return $this->redirectToRoute('task_list');
     }
 }
