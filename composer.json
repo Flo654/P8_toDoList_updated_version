@@ -73,6 +73,18 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "prepare": [
+            "php bin/console d:d:d --if-exists -f",
+            "php bin/console d:d:c",
+            "php bin/console d:s:u --force",
+            "php bin/console d:f:l -n"
+        ],
+        "prepare-test": [
+            "php bin/console d:d:d --env='test' --if-exists -f ",
+            "php bin/console d:d:c --env='test'",
+            "php bin/console d:s:u --force --env='test'",
+            "php bin/console d:f:l -n --env='test'"
         ]
     },
     "conflict": {
