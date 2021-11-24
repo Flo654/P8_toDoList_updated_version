@@ -37,12 +37,15 @@ class UserType extends AbstractType
         ;
         // creation du bouton qui autorise à l'administrateur à basculer un user en admin
         
-
+            
             $builder->add('isAdmin', CheckboxType::class, [
                 'label'    => 'Administrateur',
                 'mapped' => false,
                 'required' => false,
-                'data' => $builder->getData() Instanceof User ? in_array("ROLE_ADMIN", $builder->getData()->getRoles()) : false
+                'data' => $builder->getData() Instanceof User ? in_array("ROLE_ADMIN", $builder->getData()->getRoles()) : false,
+                'disabled' => (
+                    ($builder->getData()->getUsername() == $this->security->getUser()->getUsername()) 
+                    && (in_array("ROLE_ADMIN", $this->security->getUser()->getRoles()))) ? true : false
                 ])
             ;
         

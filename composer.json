@@ -81,10 +81,10 @@
             "php bin/console d:f:l -n"
         ],
         "prepare-test": [
-            "php bin/console d:d:d --env='test' --if-exists -f ",
-            "php bin/console d:d:c --env='test'",
-            "php bin/console d:s:u --force --env='test'",
-            "php bin/console d:f:l -n --env='test'"
+            "php bin/console d:d:d --env=\"test\"  -f ",
+            "php bin/console d:d:c --env=\"test\"",
+            "php bin/console d:s:u --force --env=\"test\"",
+            "php bin/console d:f:l -n --env=\"test\""
         ]
     },
     "conflict": {

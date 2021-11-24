@@ -73,9 +73,9 @@ Start the server
 ## Running Tests
 
 This app has been configured with sqlite database for the tests.
-To run tests, run the following command
+To run tests, run the following command in your terminal
 
-
+:warning: You can already find a coverage test in HTML format in folder web/test-coverage
 
 to create database and load fixtures:
 
@@ -83,18 +83,17 @@ to create database and load fixtures:
 
 to execute tests:
 
-if you want in HTML format, run:
-
-```bash
-  vendor/bin/phpunit --coverage-html web/test-coverage
-```
-
 if you just want to run the tests in terminal :
 
 ```bash
   vendor/bin/phpunit
 ```
 
+if you want in HTML format, run:
+
+```bash
+  vendor/bin/phpunit --coverage-html web/test-coverage
+```
 
 ## Documentation
 
