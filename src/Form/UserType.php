@@ -26,6 +26,7 @@ class UserType extends AbstractType
     {
         $builder
             ->add('username', TextType::class, ['label' => "Nom d'utilisateur"])
+            ->add('email', EmailType::class, ['label' => 'Adresse email'])
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'invalid_message' => 'Les deux mots de passe doivent correspondre.',
@@ -33,7 +34,7 @@ class UserType extends AbstractType
                 'first_options'  => ['label' => 'Mot de passe'],
                 'second_options' => ['label' => 'Tapez le mot de passe à nouveau'],
             ])
-            ->add('email', EmailType::class, ['label' => 'Adresse email'])
+            
         ;
         // creation du bouton qui autorise à l'administrateur à basculer un user en admin
         
@@ -43,9 +44,7 @@ class UserType extends AbstractType
                 'mapped' => false,
                 'required' => false,
                 'data' => $builder->getData() Instanceof User ? in_array("ROLE_ADMIN", $builder->getData()->getRoles()) : false,
-                'disabled' => (
-                    ($builder->getData()->getUsername() == $this->security->getUser()->getUsername()) 
-                    && (in_array("ROLE_ADMIN", $this->security->getUser()->getRoles()))) ? true : false
+                'disabled' => $this->security->getUser() ? (($this->security->getUser()->getUsername() == $builder->getData()->getUsername())  ? true : false)  : false
                 ])
             ;
         
